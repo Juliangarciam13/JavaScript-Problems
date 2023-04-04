@@ -18,5 +18,6 @@ const checkNameLastName = (name, lastName) => {
     }
 }
 
+
 checkNameLastName("Julian", "Garci");
 checkNameLastName("Julian", "Garcia");
