@@ -67,51 +67,38 @@ const customers = [
     }
 ]
 
-let productWithDiscount = [];
-
-const inventory = (products) => {
-
-
-    let expensive = [];
-    let chep = [];
-    
-
-    expensive = products.filter(product => product.price > 50);
-
-    chep = products.filter(product => product.price < 50);
-
-    productWithDiscount = products.map( product =>({name: product.name , price: product.price, newPrice: product.price-(product.discount*product.price)}))
-
-    return productWithDiscount
-
-}
-
-
-inventory(products);
-
-
 const createBill = (userName, productName, productQuant, storeId) => {
     const findCustomer = (customer) => customer.name === userName;
     const findProduct = (product) => product.name === productName;
     const customer = customers.find(findCustomer);
-    const product = productWithDiscount.find(findProduct);
-    if (!product) {
-        console.log("Sorry, product not found");
-        return;
-      }
-      if (products.stock < productQuant) {
+    const product = products.find(findProduct);
+    if (customer === undefined) {
+        console.log("Sorry, user not found");
+      } else if (product === undefined) {
         console.log("Sorry, we don't have that product in stock");
-        return;
-      }
+      } else if (productQuant <= 0) {
+        console.log("Sorry, the quatity of the product must be greater than 0")
+      } else if (product.stock[storeId] === undefined){
+        console.log("Sorry, store not found")
+      };
 
-    const bill = {
-        userName: `${customer.name}, ${customer.surname}`,
-        adress: `${customer.address.street}, ${customer.address.city}`,
-        productName: productName,
-        productQuantity: productQuant,
-        total: product.newPrice * productQuant
+      if (product.stock[storeId] >= 0 && productQuant <= product.stock[storeId]) {
+        product.stock[storeId] = product.stock[storeId] - productQuant;
+        let discountPrice = product.price - (product.discount * product.price);
+        let totalPrice = productQuant * discountPrice;
+
+        const bill = {
+           userName: `${customer.name}, ${customer.surname}`,
+           adress: `${customer.address.street}, ${customer.address.city}`,
+           productName: productName,
+           productQuantity: productQuant,
+           total: totalPrice,
+           totalStock: products.stock -= productQuant,
     }
     return bill;
+} else {
+    console.log("Sorry, we do not have the quatity of the requested product")
+}
 }
 
-console.log(createBill("Mary", "cap", 5, 0));
+console.log(createBill("Mary", "cap", 6, 1));
